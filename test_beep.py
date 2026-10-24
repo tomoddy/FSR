@@ -5,6 +5,7 @@ import subprocess
 import time
 
 THRESHOLD = 5000
+DEBOUNCE = 5
 
 PICO_CODE = """
 import machine, time
@@ -40,6 +41,7 @@ with serial.Serial(PORT, 115200, timeout=1) as ser:
     ser.write(b"\x04")
     print("Running on Pico... Ctrl+C to stop")
     pressed = False
+    streak = 0
     try:
         while True:
             line = ser.readline().decode(errors="ignore").strip()
@@ -48,12 +50,19 @@ with serial.Serial(PORT, 115200, timeout=1) as ser:
             if not line.isdigit():
                 continue
             raw = int(line)
-            if raw > THRESHOLD:
+            high = raw > THRESHOLD
+            if high != pressed:
+                streak += 1
+                if streak >= DEBOUNCE:
+                    pressed = high
+                    streak = 0
+                    print("PRESSED" if pressed else "RELEASED")
+                    if not pressed:
+                        beep(400, 300)
+            else:
+                streak = 0
+            if pressed:
                 beep(1000, 100)
-                pressed = True
-            elif pressed:
-                beep(400, 300)
-                pressed = False
     except KeyboardInterrupt:
         ser.write(b"\x03")
         print("Stopped")
