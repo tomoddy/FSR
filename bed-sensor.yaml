@@ -40,8 +40,8 @@ binary_sensor:
     device_class: occupancy
     sensor_id: bed_pressure_raw
     threshold:
-      upper: 2.0
-      lower: 1.6
+      upper: 2.5
+      lower: 2.1
     filters:
       - delayed_on_off:
           time_on: 20s
