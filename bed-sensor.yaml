@@ -43,8 +43,9 @@ binary_sensor:
       upper: 2.0
       lower: 1.6
     filters:
-      - delayed_on: 10s
-      - delayed_off: 5s
+      - delayed_on_off:
+          time_on: 20s
+          time_off: 20s
     on_press:
       - output.turn_on: onboard_led
     on_release:
